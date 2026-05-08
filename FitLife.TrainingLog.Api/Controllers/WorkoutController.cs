@@ -1,0 +1,73 @@
+using System.Security.Claims;
+using FitLife.TrainingLog.Api.DTOs;
+using FitLife.TrainingLog.Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace FitLife.TrainingLog.Api.Controllers;
+
+[ApiController]
+[Route("workout")]
+[Authorize]
+public class WorkoutController : ControllerBase
+{
+    private readonly IWorkoutService _service;
+
+    public WorkoutController(IWorkoutService service)
+    {
+        _service = service;
+    }
+
+    private Guid GetMemberId() =>
+        Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new UnauthorizedAccessException());
+
+    [HttpPost("programs")]
+    public async Task<IActionResult> CreateProgram(CreateWorkoutProgramRequest request)
+    {
+        var result = await _service.CreateProgramAsync(GetMemberId(), request);
+        return CreatedAtAction(nameof(GetProgram), new { id = result.Id }, result);
+    }
+
+    [HttpGet("programs")]
+    public async Task<IActionResult> GetPrograms()
+    {
+        var result = await _service.GetProgramsAsync(GetMemberId());
+        return Ok(result);
+    }
+
+    [HttpGet("programs/{id:guid}")]
+    public async Task<IActionResult> GetProgram(Guid id)
+    {
+        var result = await _service.GetProgramByIdAsync(GetMemberId(), id);
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [HttpPost("programs/{id:guid}/exercises")]
+    public async Task<IActionResult> AddExercise(Guid id, AddExerciseRequest request)
+    {
+        var result = await _service.AddExerciseAsync(GetMemberId(), id, request);
+        return Ok(result);
+    }
+
+    [HttpDelete("programs/{programId:guid}/exercises/{exerciseId:guid}")]
+    public async Task<IActionResult> DeleteExercise(Guid programId, Guid exerciseId)
+    {
+        await _service.DeleteExerciseAsync(GetMemberId(), programId, exerciseId);
+        return NoContent();
+    }
+
+    [HttpPost("activities")]
+    public async Task<IActionResult> LogActivity(CreateWorkoutActivityRequest request)
+    {
+        var result = await _service.LogActivityAsync(GetMemberId(), request);
+        return Ok(result);
+    }
+
+    [HttpGet("activities")]
+    public async Task<IActionResult> GetActivities()
+    {
+        var result = await _service.GetActivitiesAsync(GetMemberId());
+        return Ok(result);
+    }
+}
