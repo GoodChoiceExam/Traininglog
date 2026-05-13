@@ -11,4 +11,6 @@ public interface IWorkoutRepository
 
     Task<WorkoutActivity> LogActivityAsync(WorkoutActivity activity);
     Task<List<WorkoutActivity>> GetActivitiesByMemberAsync(Guid memberId);
+    Task<WorkoutProgram?> UpdateProgramNameAsync(Guid memberId, Guid programId, string newName);
+    Task<WorkoutProgram?> UpdateExerciseAsync(Guid memberId, Guid programId, Guid exerciseId, string name, int sets, int reps, decimal? weightKg);
 }
