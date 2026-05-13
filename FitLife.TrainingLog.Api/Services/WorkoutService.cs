@@ -64,7 +64,19 @@ public class WorkoutService : IWorkoutService
         program.Exercises.RemoveAll(e => e.Id == exerciseId);
         await _repository.UpdateProgramAsync(program);
     }
+    
+    public async Task<WorkoutProgramResponse?> UpdateProgramNameAsync(Guid memberId, Guid programId, string newName)
+    {
+        var program = await _repository.UpdateProgramNameAsync(memberId, programId, newName);
+        return program is null ? null : ToResponse(program);
+    }
 
+    public async Task<WorkoutProgramResponse?> UpdateExerciseAsync(Guid memberId, Guid programId, Guid exerciseId, string name, int sets, int reps, decimal? weightKg)
+    {
+        var program = await _repository.UpdateExerciseAsync(memberId, programId, exerciseId, name, sets, reps, weightKg);
+        return program is null ? null : ToResponse(program);
+    }
+    
     public async Task<WorkoutActivityResponse> LogActivityAsync(Guid memberId, CreateWorkoutActivityRequest request)
     {
         var activity = new WorkoutActivity
