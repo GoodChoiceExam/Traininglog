@@ -56,6 +56,20 @@ public class WorkoutController : ControllerBase
         await _service.DeleteExerciseAsync(GetMemberId(), programId, exerciseId);
         return NoContent();
     }
+    
+    [HttpPut("programs/{id:guid}")]
+    public async Task<IActionResult> UpdateProgramName(Guid id, [FromBody] string newName)
+    {
+        var result = await _service.UpdateProgramNameAsync(GetMemberId(), id, newName);
+        return result is null ? NotFound() : Ok(result);
+    }
+    
+    [HttpPut("programs/{programId:guid}/exercises/{exerciseId:guid}")]
+    public async Task<IActionResult> UpdateExercise(Guid programId, Guid exerciseId, AddExerciseRequest request)
+    {
+        var result = await _service.UpdateExerciseAsync(GetMemberId(), programId, exerciseId, request.Name, request.Sets, request.Reps, request.WeightKg);
+        return result is null ? NotFound() : Ok(result);
+    }
 
     [HttpPost("activities")]
     public async Task<IActionResult> LogActivity(CreateWorkoutActivityRequest request)

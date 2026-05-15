@@ -48,4 +48,31 @@ public class WorkoutRepository : IWorkoutRepository
     {
         return await _activities.Find(a => a.MemberId == memberId).ToListAsync();
     }
+    
+    public async Task<WorkoutProgram?> UpdateProgramNameAsync(Guid memberId, Guid programId, string newName)
+    {
+        var program = await GetProgramByIdAsync(memberId, programId);
+        if (program is null) return null;
+
+        program.Name = newName;
+        await _programs.ReplaceOneAsync(p => p.Id == programId, program);
+        return program;
+    }
+    
+    public async Task<WorkoutProgram?> UpdateExerciseAsync(Guid memberId, Guid programId, Guid exerciseId, string name, int sets, int reps, decimal? weightKg)
+    {
+        var program = await GetProgramByIdAsync(memberId, programId);
+        if (program is null) return null;
+
+        var exercise = program.Exercises.FirstOrDefault(e => e.Id == exerciseId);
+        if (exercise is null) return null;
+
+        exercise.Name = name;
+        exercise.Sets = sets;
+        exercise.Reps = reps;
+        exercise.WeightKg = weightKg;
+
+        await _programs.ReplaceOneAsync(p => p.Id == programId, program);
+        return program;
+    }
 }
