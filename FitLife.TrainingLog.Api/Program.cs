@@ -41,7 +41,7 @@ try
                 {
                     var client = new HttpClient();
                     var json = client.GetStringAsync(
-                        builder.Configuration["Jwt:Authority"] + "/.well-known/jwks.json").Result;
+                        builder.Configuration["Jwt:JwksUrl"] ?? "http://localhost:5244/.well-known/jwks.json").Result;
                     var jwks = new Microsoft.IdentityModel.Tokens.JsonWebKeySet(json);
                     return jwks.GetSigningKeys();
                 }
