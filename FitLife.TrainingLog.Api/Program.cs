@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.OpenApi;
 using FitLife.TrainingLog.Api.Repositories;
 using FitLife.TrainingLog.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,7 +36,6 @@ try
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
-            options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new()
             {
                 ValidateIssuer = true,
@@ -52,16 +52,32 @@ try
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("Frontend", policy =>
-            policy.WithOrigins(
-                    "http://localhost:5271",
-                    "http://localhost",
-                    "https://goodchoice.cc")
+            policy.WithOrigins("http://localhost:5271")
                 .AllowAnyHeader()
                 .AllowAnyMethod());
     });
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter a valid JWT Bearer token from the Identity service."
+        });
+
+        options.AddSecurityRequirement(_ => new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecuritySchemeReference("Bearer", null, null),
+                []
+            }
+        });
+    });
 
     var app = builder.Build();
 
