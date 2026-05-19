@@ -100,11 +100,10 @@ try
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("Frontend");
-
-    app.MapGet("/healthz", () => Results.Ok(new { status = "healthy" }));
-
     app.UseAuthentication();
     app.UseAuthorization();
+
+    app.MapGet("/healthz", () => Results.Ok(new { status = "healthy" }));
 
     app.MapControllers();
 
