@@ -1,3 +1,4 @@
+using System.Text;
 using FitLife.TrainingLog.Api.Repositories;
 using FitLife.TrainingLog.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,6 +35,7 @@ try
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
+            options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new()
             {
                 ValidateIssuer = true,
@@ -50,7 +52,10 @@ try
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("Frontend", policy =>
-            policy.WithOrigins("http://localhost:5271")
+            policy.WithOrigins(
+                    "http://localhost:5271",
+                    "http://localhost",
+                    "https://goodchoice.cc")
                 .AllowAnyHeader()
                 .AllowAnyMethod());
     });
