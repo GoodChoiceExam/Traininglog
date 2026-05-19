@@ -10,13 +10,12 @@ using MongoDB.Driver;
 using NLog;
 using NLog.Web;
 
-BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
-
-
 var logger = LogManager.Setup().LoadConfigurationFromFile("NLog.config").GetCurrentClassLogger();
 
 try
 {
+    BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
+
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Logging.ClearProviders();
@@ -96,6 +95,7 @@ try
     });
 
     var app = builder.Build();
+    logger.Info("FitLife Traininglog API starting");
 
     app.UseSwagger();
     app.UseSwaggerUI();
