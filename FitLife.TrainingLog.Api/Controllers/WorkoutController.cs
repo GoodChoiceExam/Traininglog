@@ -12,10 +12,12 @@ namespace FitLife.TrainingLog.Api.Controllers;
 public class WorkoutController : ControllerBase
 {
     private readonly IWorkoutService _service;
+    private readonly ILogger<WorkoutController> _logger;
 
-    public WorkoutController(IWorkoutService service)
+    public WorkoutController(IWorkoutService service, ILogger<WorkoutController> logger)
     {
         _service = service;
+        _logger = logger;
     }
 
     private Guid GetMemberId() =>
@@ -83,5 +85,28 @@ public class WorkoutController : ControllerBase
     {
         var result = await _service.GetActivitiesAsync(GetMemberId());
         return Ok(result);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("version")]
+    public async Task<Dictionary<string, string>> GetVersion()
+    {
+        var properties = new Dictionary<string, string>();
+        properties.Add("service", "FitLife TrainingLog API");
+        var ver = System.Diagnostics.FileVersionInfo.GetVersionInfo(typeof(Program).Assembly.Location).ProductVersion;
+        properties.Add("version", ver!);
+        try
+        {
+            var hostName = System.Net.Dns.GetHostName();
+            var ips = await System.Net.Dns.GetHostAddressesAsync(hostName);
+            var ipa = ips.First().MapToIPv4().ToString();
+            properties.Add("hosted-at-address", ipa);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+            properties.Add("hosted-at-address", "Could not resolve IP-address");
+        }
+        return properties;
     }
 }
