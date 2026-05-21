@@ -72,6 +72,7 @@ try
 
     builder.Services.AddSingleton<IWorkoutRepository, WorkoutRepository>();
     builder.Services.AddSingleton<IWorkoutService, WorkoutService>();
+    builder.Services.AddHostedService<HeartbeatService>();
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
