@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using FitLife.TrainingLog.Api.Repositories;
 using FitLife.TrainingLog.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -73,7 +74,7 @@ try
     builder.Services.AddSingleton<IWorkoutService, WorkoutService>();
     builder.Services.AddControllers()
         .AddJsonOptions(options =>
-            options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter()));
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options =>
     {
@@ -97,7 +98,7 @@ try
     });
 
     var app = builder.Build();
-    logger.Info("FitLife Traininglog API starting");
+    logger.Info("FitLife TrainingLog API starting");
 
     app.UseSwagger();
     app.UseSwaggerUI();
