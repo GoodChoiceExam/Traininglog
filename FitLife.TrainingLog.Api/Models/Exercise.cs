@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace FitLife.TrainingLog.Api.Models;
 
+// En øvelse der er indlejret i et WorkoutProgram-dokument i MongoDB.
 public class Exercise
 {
     [BsonId]

@@ -3,6 +3,8 @@ using MongoDB.Driver;
 
 namespace FitLife.TrainingLog.Api.Repositories;
 
+// MongoDB-implementering af IWorkoutRepository.
+// Programmer og aktiviteter gemmes i to separate samlinger.
 public class WorkoutRepository : IWorkoutRepository
 {
     private readonly IMongoCollection<WorkoutProgram> _programs;
@@ -25,6 +27,7 @@ public class WorkoutRepository : IWorkoutRepository
         return await _programs.Find(p => p.MemberId == memberId).ToListAsync();
     }
 
+    // Filtrerer på både programId og memberId så et program ikke kan hentes af en anden bruger
     public async Task<WorkoutProgram?> GetProgramByIdAsync(Guid memberId, Guid programId)
     {
         return await _programs
@@ -59,6 +62,7 @@ public class WorkoutRepository : IWorkoutRepository
         return program;
     }
     
+    // Henter programmet, opdaterer øvelsen i hukommelsen og gemmer hele dokumentet igen
     public async Task<WorkoutProgram?> UpdateExerciseAsync(Guid memberId, Guid programId, Guid exerciseId, string name, int sets, int reps, decimal? weightKg)
     {
         var program = await GetProgramByIdAsync(memberId, programId);

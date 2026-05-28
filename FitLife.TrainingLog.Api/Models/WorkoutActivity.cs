@@ -3,6 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace FitLife.TrainingLog.Api.Models;
 
+// En logget træningsaktivitet gemt i sin egen MongoDB-samling.
+// Modsat øvelser er aktiviteter ikke indlejret i et program men er selvstændige dokumenter.
 public class WorkoutActivity
 {
     [BsonId]
