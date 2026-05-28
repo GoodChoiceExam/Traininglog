@@ -5,7 +5,7 @@ using FitLife.TrainingLog.Api.Repositories;
 
 namespace FitLife.TrainingLog.Api.Services;
 
-// Mapper mellem DTOs og domænemodeller og delegerer dataoperationer til repository
+// Delegerer dataoperationer til repository og returnerer domænemodeller
 public class WorkoutService : IWorkoutService
 {
     private readonly IWorkoutRepository _repository;
@@ -15,7 +15,7 @@ public class WorkoutService : IWorkoutService
         _repository = repository;
     }
 
-    public async Task<WorkoutProgramResponse> CreateProgramAsync(Guid memberId, CreateWorkoutProgramRequest request)
+    public async Task<WorkoutProgram> CreateProgramAsync(Guid memberId, CreateWorkoutProgramRequest request)
     {
         var program = new WorkoutProgram
         {
@@ -23,24 +23,21 @@ public class WorkoutService : IWorkoutService
             Name = request.Name
         };
 
-        var created = await _repository.CreateProgramAsync(program);
-        return ToResponse(created);
+        return await _repository.CreateProgramAsync(program);
     }
 
-    public async Task<List<WorkoutProgramResponse>> GetProgramsAsync(Guid memberId)
+    public async Task<List<WorkoutProgram>> GetProgramsAsync(Guid memberId)
     {
-        var programs = await _repository.GetProgramsByMemberAsync(memberId);
-        return programs.Select(ToResponse).ToList();
+        return await _repository.GetProgramsByMemberAsync(memberId);
     }
 
-    public async Task<WorkoutProgramResponse?> GetProgramByIdAsync(Guid memberId, Guid programId)
+    public async Task<WorkoutProgram?> GetProgramByIdAsync(Guid memberId, Guid programId)
     {
-        var program = await _repository.GetProgramByIdAsync(memberId, programId);
-        return program is null ? null : ToResponse(program);
+        return await _repository.GetProgramByIdAsync(memberId, programId);
     }
 
     // Kaster KeyNotFoundException hvis programmet ikke findes, som controlleren fanger og returnerer 404 på
-    public async Task<WorkoutProgramResponse> AddExerciseAsync(Guid memberId, Guid programId, AddExerciseRequest request)
+    public async Task<WorkoutProgram> AddExerciseAsync(Guid memberId, Guid programId, AddExerciseRequest request)
     {
         var program = await _repository.GetProgramByIdAsync(memberId, programId)
             ?? throw new KeyNotFoundException("Program ikke fundet");
@@ -55,8 +52,7 @@ public class WorkoutService : IWorkoutService
         };
 
         program.Exercises.Add(exercise);
-        var updated = await _repository.UpdateProgramAsync(program);
-        return ToResponse(updated);
+        return await _repository.UpdateProgramAsync(program);
     }
 
     public async Task DeleteExerciseAsync(Guid memberId, Guid programId, Guid exerciseId)
@@ -68,22 +64,13 @@ public class WorkoutService : IWorkoutService
         await _repository.UpdateProgramAsync(program);
     }
     
-    public async Task<WorkoutProgramResponse?> UpdateProgramNameAsync(Guid memberId, Guid programId, string newName)
+    public async Task<WorkoutProgram?> UpdateProgramNameAsync(Guid memberId, Guid programId, string newName)
     {
-        var program = await _repository.UpdateProgramNameAsync(memberId, programId, newName);
-        return program is null ? null : ToResponse(program);
+        return await _repository.UpdateProgramNameAsync(memberId, programId, newName);
     }
 
-    public async Task<WorkoutProgramResponse?> UpdateExerciseAsync(Guid memberId, Guid programId, Guid exerciseId, string name, int sets, int reps, decimal? weightKg)
+    public async Task<WorkoutProgram?> UpdateExerciseAsync(Guid memberId, Guid programId, Guid exerciseId, string name, int sets, int reps, decimal? weightKg)
     {
-        var program = await _repository.UpdateExerciseAsync(memberId, programId, exerciseId, name, sets, reps, weightKg);
-        return program is null ? null : ToResponse(program);
+        return await _repository.UpdateExerciseAsync(memberId, programId, exerciseId, name, sets, reps, weightKg);
     }
-    
-    // Mapper domænemodel til response-DTO inklusive alle indlejrede øvelser
-    private static WorkoutProgramResponse ToResponse(WorkoutProgram p) => new(
-        p.Id,
-        p.Name,
-        p.Exercises.Select(e => new ExerciseResponse(e.Id, e.Name, e.Sets, e.Reps, e.WeightKg)).ToList()
-    );
 }
