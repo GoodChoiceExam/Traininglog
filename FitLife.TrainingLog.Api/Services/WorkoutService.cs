@@ -2,6 +2,7 @@ using FitLife.TrainingLog.Api.DTOs;
 using FitLife.TrainingLog.Api.Models;
 using FitLife.TrainingLog.Api.Repositories;
 
+
 namespace FitLife.TrainingLog.Api.Services;
 
 // Mapper mellem DTOs og domænemodeller og delegerer dataoperationer til repository
@@ -79,40 +80,10 @@ public class WorkoutService : IWorkoutService
         return program is null ? null : ToResponse(program);
     }
     
-    public async Task<WorkoutActivityResponse> LogActivityAsync(Guid memberId, CreateWorkoutActivityRequest request)
-    {
-        var activity = new WorkoutActivity
-        {
-            MemberId = memberId,
-            ActivityName = request.ActivityName,
-            ActivityType = request.ActivityType,
-            DurationMinutes = request.DurationMinutes,
-            PerformedAt = request.PerformedAt
-        };
-
-        var logged = await _repository.LogActivityAsync(activity);
-        return ToActivityResponse(logged);
-    }
-
-    public async Task<List<WorkoutActivityResponse>> GetActivitiesAsync(Guid memberId)
-    {
-        var activities = await _repository.GetActivitiesByMemberAsync(memberId);
-        return activities.Select(ToActivityResponse).ToList();
-    }
-
     // Mapper domænemodel til response-DTO inklusive alle indlejrede øvelser
     private static WorkoutProgramResponse ToResponse(WorkoutProgram p) => new(
         p.Id,
         p.Name,
-        p.ExerciseCount,
         p.Exercises.Select(e => new ExerciseResponse(e.Id, e.Name, e.Sets, e.Reps, e.WeightKg)).ToList()
-    );
-
-    private static WorkoutActivityResponse ToActivityResponse(WorkoutActivity a) => new(
-        a.Id,
-        a.ActivityName,
-        a.ActivityType,
-        a.DurationMinutes,
-        a.PerformedAt
     );
 }

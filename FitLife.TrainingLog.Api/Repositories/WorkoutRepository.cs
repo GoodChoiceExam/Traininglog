@@ -8,12 +8,10 @@ namespace FitLife.TrainingLog.Api.Repositories;
 public class WorkoutRepository : IWorkoutRepository
 {
     private readonly IMongoCollection<WorkoutProgram> _programs;
-    private readonly IMongoCollection<WorkoutActivity> _activities;
 
     public WorkoutRepository(IMongoDatabase database)
     {
         _programs = database.GetCollection<WorkoutProgram>("workoutprograms");
-        _activities = database.GetCollection<WorkoutActivity>("workoutactivities");
     }
 
     public async Task<WorkoutProgram> CreateProgramAsync(WorkoutProgram program)
@@ -41,17 +39,6 @@ public class WorkoutRepository : IWorkoutRepository
         return program;
     }
 
-    public async Task<WorkoutActivity> LogActivityAsync(WorkoutActivity activity)
-    {
-        await _activities.InsertOneAsync(activity);
-        return activity;
-    }
-
-    public async Task<List<WorkoutActivity>> GetActivitiesByMemberAsync(Guid memberId)
-    {
-        return await _activities.Find(a => a.MemberId == memberId).ToListAsync();
-    }
-    
     public async Task<WorkoutProgram?> UpdateProgramNameAsync(Guid memberId, Guid programId, string newName)
     {
         var program = await GetProgramByIdAsync(memberId, programId);
