@@ -4,6 +4,7 @@ using FitLife.TrainingLog.Api.Repositories;
 
 namespace FitLife.TrainingLog.Api.Services;
 
+// Mapper mellem DTOs og domænemodeller og delegerer dataoperationer til repository
 public class WorkoutService : IWorkoutService
 {
     private readonly IWorkoutRepository _repository;
@@ -37,6 +38,7 @@ public class WorkoutService : IWorkoutService
         return program is null ? null : ToResponse(program);
     }
 
+    // Kaster KeyNotFoundException hvis programmet ikke findes, som controlleren fanger og returnerer 404 på
     public async Task<WorkoutProgramResponse> AddExerciseAsync(Guid memberId, Guid programId, AddExerciseRequest request)
     {
         var program = await _repository.GetProgramByIdAsync(memberId, programId)
@@ -98,6 +100,7 @@ public class WorkoutService : IWorkoutService
         return activities.Select(ToActivityResponse).ToList();
     }
 
+    // Mapper domænemodel til response-DTO inklusive alle indlejrede øvelser
     private static WorkoutProgramResponse ToResponse(WorkoutProgram p) => new(
         p.Id,
         p.Name,

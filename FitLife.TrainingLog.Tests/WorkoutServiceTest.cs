@@ -6,6 +6,8 @@ using FitLife.TrainingLog.Api.Services;
 
 namespace FitLife.TrainingLog.Tests;
 
+// Tests for WorkoutService. Repository mockes med Moq så vi tester
+// service-logikken isoleret uden MongoDB.
 [TestFixture]
 public class WorkoutServiceTests
 {
@@ -19,6 +21,7 @@ public class WorkoutServiceTests
         _service = new WorkoutService(_repoMock.Object);
     }
 
+    // Verificerer at programmet returneres med det korrekte navn fra requesten
     [Test]
     public async Task CreateProgramAsync_ReturnsResponse_WithCorrectName()
     {
@@ -33,6 +36,7 @@ public class WorkoutServiceTests
         Assert.That(result.Name, Is.EqualTo("Styrke dag A"));
     }
 
+    // Verificerer at MemberId fra parameteren sættes korrekt på det oprettede program
     [Test]
     public async Task CreateProgramAsync_SætterMemberIdFraParameter()
     {
@@ -48,6 +52,7 @@ public class WorkoutServiceTests
         Assert.That(captured!.MemberId, Is.EqualTo(memberId));
     }
 
+    // Verificerer at null returneres hvis programmet ikke tilhører det angivne member
     [Test]
     public async Task GetProgramByIdAsync_ReturnerNull_HvisIkkeEjet()
     {
@@ -62,6 +67,7 @@ public class WorkoutServiceTests
         Assert.That(result, Is.Null);
     }
 
+    // Verificerer at MemberId sættes korrekt på den loggede aktivitet
     [Test]
     public async Task LogActivityAsync_SætterMemberIdFraParameter()
     {

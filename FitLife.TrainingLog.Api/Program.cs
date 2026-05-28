@@ -11,14 +11,17 @@ using MongoDB.Driver;
 using NLog;
 using NLog.Web;
 
+// Logger sættes op tidligt så vi kan fange fejl allerede under startup
 var logger = LogManager.Setup().LoadConfigurationFromFile("NLog.config").GetCurrentClassLogger();
 
 try
 {
+    // Guid skal serialiseres som standard UUID-streng i MongoDB, ikke som legacy BSON Binary
     BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.GuidRepresentation.Standard));
 
     var builder = WebApplication.CreateBuilder(args);
 
+    // Fjerner de standard ASP.NET log-providers og sætter NLog op i stedet
     builder.Logging.ClearProviders();
     builder.Host.UseNLog();
 
@@ -66,6 +69,7 @@ try
                 .AllowAnyMethod());
     });
 
+    // MongoDB-klienten er singleton fordi MongoClient er trådsikker og dyr at oprette
     var mongoClient = new MongoClient(builder.Configuration["MongoDB:ConnectionString"]);
     var database = mongoClient.GetDatabase(builder.Configuration["MongoDB:DatabaseName"]);
     builder.Services.AddSingleton(database);

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FitLife.TrainingLog.Api.Controllers;
 
+// Eksponerer endpoints til træningsprogrammer og aktivitetslogning via HTTP.
+// MemberId hentes altid fra JWT-tokenet så et medlem kun kan se og redigere egne data.
 [ApiController]
 [Route("workout")]
 [Authorize]
@@ -20,6 +22,7 @@ public class WorkoutsController : ControllerBase
         _logger = logger;
     }
 
+    // Henter member-id fra JWT-tokenets NameIdentifier-claim og kaster exception hvis det mangler
     private Guid GetMemberId() =>
         Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)
             ?? throw new UnauthorizedAccessException());
