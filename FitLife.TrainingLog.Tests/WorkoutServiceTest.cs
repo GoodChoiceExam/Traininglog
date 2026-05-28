@@ -4,6 +4,7 @@ using FitLife.TrainingLog.Api.Repositories;
 using Moq;
 using FitLife.TrainingLog.Api.Services;
 
+
 namespace FitLife.TrainingLog.Tests;
 
 // Tests for WorkoutService. Repository mockes med Moq så vi tester
@@ -67,25 +68,4 @@ public class WorkoutServiceTests
         Assert.That(result, Is.Null);
     }
 
-    // Verificerer at MemberId sættes korrekt på den loggede aktivitet
-    [Test]
-    public async Task LogActivityAsync_SætterMemberIdFraParameter()
-    {
-        var memberId = Guid.NewGuid();
-        var request = new CreateWorkoutActivityRequest(
-            "Morgen løbetur",
-            ActivityType.Gym,
-            45,
-            DateTime.UtcNow);
-
-        WorkoutActivity? captured = null;
-
-        _repoMock.Setup(r => r.LogActivityAsync(It.IsAny<WorkoutActivity>()))
-                 .Callback<WorkoutActivity>(a => captured = a)
-                 .ReturnsAsync((WorkoutActivity a) => a);
-
-        await _service.LogActivityAsync(memberId, request);
-
-        Assert.That(captured!.MemberId, Is.EqualTo(memberId));
-    }
 }

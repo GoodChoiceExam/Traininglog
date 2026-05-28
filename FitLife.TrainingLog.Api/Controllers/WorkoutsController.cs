@@ -101,22 +101,6 @@ public class WorkoutsController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("activities")]
-    public async Task<IActionResult> LogActivity(CreateWorkoutActivityRequest request)
-    {
-        var result = await _service.LogActivityAsync(GetMemberId(), request);
-        _logger.LogInformation("Logged workout activity {ActivityId}", result.Id);
-        return Ok(result);
-    }
-
-    [HttpGet("activities")]
-    public async Task<IActionResult> GetActivities()
-    {
-        _logger.LogInformation("Fetching workout activities for member");
-        var result = await _service.GetActivitiesAsync(GetMemberId());
-        return Ok(result);
-    }
-
     [AllowAnonymous]
     [HttpGet("version")]
     public async Task<Dictionary<string, string>> GetVersion()

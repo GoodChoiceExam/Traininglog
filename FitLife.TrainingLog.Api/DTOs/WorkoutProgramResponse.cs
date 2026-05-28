@@ -12,5 +12,4 @@ public record ExerciseResponse(
 public record WorkoutProgramResponse(
     Guid Id,
     string Name,
-    int ExerciseCount,
     List<ExerciseResponse> Exercises);
