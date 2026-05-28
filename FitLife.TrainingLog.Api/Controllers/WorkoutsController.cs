@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using FitLife.TrainingLog.Api.DTOs;
+using FitLife.TrainingLog.Api.Models;
 using FitLife.TrainingLog.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ public class WorkoutsController : ControllerBase
     {
         var result = await _service.CreateProgramAsync(GetMemberId(), request);
         _logger.LogInformation("Created workout program {ProgramId}", result.Id);
-        return CreatedAtAction(nameof(GetProgram), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(GetProgram), new { id = result.Id }, ToResponse(result));
     }
 
     [HttpGet("programs")]
@@ -40,7 +41,7 @@ public class WorkoutsController : ControllerBase
     {
         _logger.LogInformation("Fetching workout programs for member");
         var result = await _service.GetProgramsAsync(GetMemberId());
-        return Ok(result);
+        return Ok(result.Select(ToResponse).ToList());
     }
 
     [HttpGet("programs/{id:guid}")]
@@ -54,7 +55,7 @@ public class WorkoutsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(result);
+        return Ok(ToResponse(result));
     }
 
     [HttpPost("programs/{id:guid}/exercises")]
@@ -62,7 +63,7 @@ public class WorkoutsController : ControllerBase
     {
         var result = await _service.AddExerciseAsync(GetMemberId(), id, request);
         _logger.LogInformation("Added exercise to workout program {ProgramId}", id);
-        return Ok(result);
+        return Ok(ToResponse(result));
     }
 
     [HttpDelete("programs/{programId:guid}/exercises/{exerciseId:guid}")]
@@ -84,7 +85,7 @@ public class WorkoutsController : ControllerBase
         }
 
         _logger.LogInformation("Updated name of workout program {ProgramId}", id);
-        return Ok(result);
+        return Ok(ToResponse(result));
     }
 
     [HttpPut("programs/{programId:guid}/exercises/{exerciseId:guid}")]
@@ -98,7 +99,7 @@ public class WorkoutsController : ControllerBase
         }
 
         _logger.LogInformation("Updated exercise {ExerciseId} in workout program {ProgramId}", exerciseId, programId);
-        return Ok(result);
+        return Ok(ToResponse(result));
     }
 
     [AllowAnonymous]
@@ -123,4 +124,10 @@ public class WorkoutsController : ControllerBase
         }
         return properties;
     }
+
+    private static WorkoutProgramResponse ToResponse(WorkoutProgram p) => new(
+        p.Id,
+        p.Name,
+        p.Exercises.Select(e => new ExerciseResponse(e.Id, e.Name, e.Sets, e.Reps, e.WeightKg)).ToList()
+    );
 }
