@@ -3,6 +3,9 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace FitLife.TrainingLog.Api.Models;
 
+// Et træningsprogram tilhørende et enkelt medlem.
+// Øvelser gemmes som en indlejret liste i dokumentet fremfor i en separat samling.
+// ExerciseCount er en beregnet property der ikke gemmes i MongoDB.
 public class WorkoutProgram
 {
     [BsonId]

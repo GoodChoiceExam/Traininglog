@@ -2,6 +2,7 @@ using FitLife.TrainingLog.Api.DTOs;
 
 namespace FitLife.TrainingLog.Api.Services;
 
+// Kontrakt for forretningslogik around træningsprogrammer og aktivitetslogning
 public interface IWorkoutService
 {
     Task<WorkoutProgramResponse> CreateProgramAsync(Guid memberId, CreateWorkoutProgramRequest request);

@@ -3,6 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace FitLife.TrainingLog.Api.Models;
 
+// En øvelse der er indlejret i et WorkoutProgram-dokument i MongoDB.
+// WeightKg er nullable fordi nogle øvelser som bodyweight squats ikke har en vægt.
 public class Exercise
 {
     [BsonId]
