@@ -1,7 +1,6 @@
 name: CI/CD
 
 # Bygger og tester på alle branches. Publish sker kun på master.
-# Ingen integration-tests i denne service da der ikke er en Newman-samling.
 on:
   push:
     branches: [master, develop, "feature/**"]
